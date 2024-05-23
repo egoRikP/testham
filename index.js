@@ -1,6 +1,5 @@
 const axios = require('axios');
 const cron = require('node-cron');
-const keepAlive = require("./keepAlive.js");
 
 const sync_URL = "https://api.hamsterkombat.io/clicker/sync";
 const click_URL = 'https://api.hamsterkombat.io/clicker/tap';
@@ -46,27 +45,89 @@ const getInfo = async () => {
 
 const getUpgrades = async () => {
     try {
+        const currentTimestamp = Math.floor(Date.now() / 1000); // Поточний час в секундах
+
         const response = await axios.post(upgradesForBuy_URL, {}, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
         });
-        console.log(response.data.upgradesForBuy);
+
+        const upgrades = response.data.upgradesForBuy;
+        const bestOffers = analyzeUpgrades(upgrades);
+
+        console.log("Найвигідніші доступні акції:");
+        bestOffers.forEach((offer, index) =>
+            console.log(`${index + 1}. ID: ${offer.id}, Назва: ${offer.name}, Ціна: ${offer.price}, Профіт: ${offer.profitPerHourDelta}, Відношення профіту до ціни: ${(offer.profitPerHourDelta / offer.price).toFixed(2)}`)
+        );
+
+
     } catch (error) {
         console.error(`Error: ${error.response ? error.response.status : error.message}`);
     }
 }
 
+function analyzeUpgrades(upgrades) {
+    return upgrades
+        .filter(upgrade => upgrade.isAvailable)
+        .map(upgrade => ({
+            ...upgrade,
+            profitToPriceRatio: upgrade.profitPerHourDelta / upgrade.price
+        }))
+        .sort((a, b) => b.profitToPriceRatio - a.profitToPriceRatio)
+        .slice(0, 3);
+}
+
+async function buySelectedOffers(offers, timestamp, token) {
+    const currentTimestamp = Math.floor(Date.now() / 1000); // Поточний час в секундах
+    for (const offer of offers) {
+        console.log(offer.id)
+        try {
+            await axios.post(buyBoost_URL, {
+                upgradeId: offer.id,
+                timestamp: currentTimestamp
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            console.log(`Покупка акції "${offer.name}" з ID ${offer.id} виконана успішно.`);
+        } catch (error) {
+            console.error(`Помилка під час покупки акції "${offer.name}" з ID ${offer.id}:`, error.message);
+        }
+    }
+
+    try {
+        const tapResponse = await axios.post(tap_URL, {}, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        console.log(`Залишилося монет: ${tapResponse.data.clickerUser.balanceCoins}`);
+    } catch (error) {
+        console.error("Помилка під час оновлення балансу монет:", error.message);
+    }
+}
+
+const buyUpgrade = async (offer) => {
+    const currentTimestamp = Math.floor(Date.now() / 1000); // Поточний час в секундах
+    try {
+        const response = await axios.post(buyBoost_URL, {
+            upgradeId: offer.id,
+            timestamp: currentTimestamp
+        }, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        console.log(`Successfully bought upgrade: ${offer.name}`);
+    } catch (error) {
+        console.error(`Error buying upgrade: ${error.response ? error.response.status : error.message}`);
+    }
+};
+
 //every 28 minutes
 cron.schedule("*/28 * * * *", () => {
-    console.log("Click");
-    // click();
+    console.log("every 28 minutes - click");
+    click();
 });
-
-//every hour
-cron.schedule("0 */1 * * *", () => {
-    console.log("Click");
-    // click();
-});
-
-getUpgrades();
