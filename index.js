@@ -1,5 +1,6 @@
 const axios = require('axios');
 const cron = require('node-cron');
+const keepAlive = require("/keepAlive.js")
 
 const sync_URL = "https://api.hamsterkombat.io/clicker/sync";
 const click_URL = 'https://api.hamsterkombat.io/clicker/tap';
