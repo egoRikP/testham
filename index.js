@@ -214,7 +214,7 @@ async function buySelectedOffers(offers, timestamp, token) {
 }
 
 
-cron.schedule("* */1 * * *", () => {
+cron.schedule("* * */1 * *", () => {
     console.log("ПРОЙШЛА ГОДИНА - КУПЛЯЮ БУСТИ");
     fetchUpgrades(upgradesForBuy_URL, token);
 });
