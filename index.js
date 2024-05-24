@@ -127,6 +127,23 @@ const buyUpgrade = async (offer) => {
     }
 };
 
+const buyBoost = async () => {
+    const currentTimestamp = Math.floor(Date.now() / 1000); // Поточний час в секундах
+    try {
+        const response = await axios.post(buyBoost_URL, {
+            boostId: "BoostFullAvailableTaps",
+            timestamp: currentTimestamp
+        }, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        console.log(`ФРІ БУСТ ЗАБРАВ`);
+    } catch (error) {
+        console.error(`Error free boost: ${error.response ? error.response.status : error.message}`);
+    }
+};
+
 async function fetchUpgrades(url, token) {
     try {
         const currentTimestamp = Date.now(); // Отримуємо поточний час в мілісекундах
@@ -206,9 +223,16 @@ async function buySelectedOffers(offers, timestamp, token) {
     } 
 }
 
-cron.schedule("*/28 * * * *", () => {
+cron.schedule("*/34 * * * *", () => {
     console.log("ПРОЙШЛО 28 ХВ - КЛІКАЮ!");    
     click();
     console.log("КУПЛЯЮ БУСТИ!")
     fetchUpgrades(upgradesForBuy_URL, token);
+});
+
+cron.schedule("0 0 */4 * * *", () => {
+    console.log("ПРОЙШЛИ 4 ГОДИНИ БЕРЕМО ФРІ КЛІКИ!");    
+    click();
+    console.log("КУПЛЯЮ БУСТИ!")
+    buyBoost();
 });
