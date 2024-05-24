@@ -231,8 +231,9 @@ cron.schedule("*/34 * * * *", () => {
 });
 
 cron.schedule("0 0 */4 * * *", () => {
-    console.log("ПРОЙШЛИ 4 ГОДИНИ БЕРЕМО ФРІ КЛІКИ!");    
+    console.log("ПРОЙШЛИ 4 ГОДИНИ БЕРЕМО ФРІ КЛІКИ!");        
+    buyBoost().then(() => {
     click();
+    });    
     console.log("КУПЛЯЮ БУСТИ!")
-    buyBoost();
 });
