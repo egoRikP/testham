@@ -127,9 +127,6 @@ const buyUpgrade = async (offer) => {
     }
 };
 
-click();
-
-//every 28 minutes
 cron.schedule("*/28 * * * *", () => {
     console.log("every 28 minutes - click");
     click();
