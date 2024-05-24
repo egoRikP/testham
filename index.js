@@ -128,6 +128,96 @@ const buyUpgrade = async (offer) => {
 };
 
 cron.schedule("*/28 * * * *", () => {
-    console.log("every 28 minutes - click");
+    console.log("ПРОЙШЛО 28 ХВ - КЛІКАЮ!");
     click();
+});
+
+
+
+async function fetchUpgrades(url, token) {
+    try {
+        const currentTimestamp = Date.now(); // Отримуємо поточний час в мілісекундах
+
+        // Отримуємо актуальну кількість монет перед вибором акцій
+        const tapResponse = await axios.post('https://api.hamsterkombat.io/clicker/sync', {},{
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        console.log(`Залишилося монет: ${tapResponse.data.clickerUser.balanceCoins}`);
+
+        const response = await axios.post(url, {
+            count: 100,
+            availableTaps: 0,
+            timestamp: currentTimestamp
+        }, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        // Отримання даних про апгрейди з відповіді
+        const upgrades = response.data.upgradesForBuy;
+
+        // Функція для знаходження найвигідніших акцій
+        function findBestOffers(upgrades) {
+            const availableUpgrades = upgrades.filter(upgrade => upgrade.isAvailable && !upgrade.isExpired);
+
+            availableUpgrades.sort((a, b) => (b.profitPerHourDelta / b.price) - (a.profitPerHourDelta / a.price));
+            return availableUpgrades.slice(0, 5);
+        }
+
+        // Знаходимо найвигідніші доступні акції
+        const bestOffers = findBestOffers(upgrades);
+        console.log("Найвигідніші доступні акції:");
+        bestOffers.forEach((offer, index) => console.log(`${index + 1}. ID: ${offer.id}, Назва: ${offer.name}, Ціна: ${offer.price}, Профіт: ${offer.profitPerHourDelta}, Відношення профіту до ціни: ${offer.profitPerHourDelta / offer.price}`));
+
+        // Автоматично купуємо найвигідніші акції
+        await buySelectedOffers(bestOffers, currentTimestamp, token);
+
+
+    } catch (error) {
+        console.error("Помилка під час виконання запиту:", error.message);
+    }
+}
+
+async function buySelectedOffers(offers, timestamp, token) {
+    const buyUrl = "https://api.hamsterkombat.io/clicker/buy-upgrade";
+    try {
+        for (const offer of offers) {
+            try {
+                const response = await axios.post(buyUrl, {
+                    upgradeId: offer.id,
+                    timestamp: timestamp
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                console.log(`Покупка акції "${offer.name}" з ID ${offer.id} виконана успішно.`);
+
+                // Отримуємо актуальну кількість монет після покупки
+                const tapResponse = await axios.post('https://api.hamsterkombat.io/clicker/sync', {}, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                // fetchUpgrades(url, token)
+                console.log(`Залишилося монет: ${tapResponse.data.clickerUser.balanceCoins}`);
+            } catch (error) {
+                console.error(`Помилка під час покупки акції "${offer.name}" з ID ${offer.id}:`, error.message);
+            }
+        }
+    } catch (error) {
+        console.error(`Помилка під час покупки акцій:`, error.message);
+    } finally {
+        fetchUpgrades(url, token);
+
+    }
+}
+
+
+cron.schedule("*/28 * * * *", () => {
+    console.log("ПРОЙШЛА ГОДИНА - КУПЛЯЮ БУСТИ");
+    fetchUpgrades(upgradesForBuy_URL, token);
 });
