@@ -210,10 +210,7 @@ async function buySelectedOffers(offers, timestamp, token) {
         }
     } catch (error) {
         console.error(`Помилка під час покупки акцій:`, error.message);
-    } finally {
-        fetchUpgrades(url, token);
-
-    }
+    } 
 }
 
 
