@@ -127,13 +127,6 @@ const buyUpgrade = async (offer) => {
     }
 };
 
-cron.schedule("*/28 * * * *", () => {
-    console.log("ПРОЙШЛО 28 ХВ - КЛІКАЮ!");
-    click();
-});
-
-
-
 async function fetchUpgrades(url, token) {
     try {
         const currentTimestamp = Date.now(); // Отримуємо поточний час в мілісекундах
@@ -213,8 +206,9 @@ async function buySelectedOffers(offers, timestamp, token) {
     } 
 }
 
-
-cron.schedule("* * */1 * *", () => {
-    console.log("ПРОЙШЛА ГОДИНА - КУПЛЯЮ БУСТИ");
+cron.schedule("*/28 * * * *", () => {
+    console.log("ПРОЙШЛО 28 ХВ - КЛІКАЮ!");    
+    click();
+    console.log("КУПЛЯЮ БУСТИ!")
     fetchUpgrades(upgradesForBuy_URL, token);
 });
