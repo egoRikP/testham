@@ -107,6 +107,10 @@ const processFreeTapsAndTap = async () => {
 cron.schedule("*/33 * * * *", processTap);
 cron.schedule("0 0 */3 * * *", processFreeTapsAndTap);
 
+const fs = require('fs');
+const path = require('path');
+
+// Шлях до файлу tokens.json
 const filePath = path.join('/etc/secrets', 'tokens.json');
 
 // Читання файлу
@@ -122,3 +126,4 @@ fs.readFile(filePath, 'utf8', (err, data) => {
         console.error('Error parsing JSON:', err);
     }
 });
+
