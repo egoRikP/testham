@@ -104,5 +104,5 @@ const processFreeTapsAndTap = async () => {
     }
 };
 
-cron.schedule("*/34 * * * *", processTap);
+cron.schedule("*/30 * * * *", processTap);
 cron.schedule("0 0 */3 * * *", processFreeTapsAndTap);
