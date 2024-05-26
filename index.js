@@ -86,7 +86,7 @@ const analyzeUpgrades = (upgrades) =>
 
 const processTap = async () => {
     try {
-        console.log("ПРОЙШЛО 34 ХВ - КЛІКАЮ!");
+        console.log("ПРОЙШЛО 33 ХВ - КЛІКАЮ!");
         await tap();
         await processUpgrades();
     } catch (error) {
@@ -96,7 +96,7 @@ const processTap = async () => {
 
 const processFreeTapsAndTap = async () => {
     try {
-        console.log("ПРОЙШЛИ 4 ГОДИНИ - БЕРЕМО ФРІ КЛІКИ!");
+        console.log("ПРОЙШЛИ 3 ГОДИНИ - БЕРЕМО ФРІ КЛІКИ!");
         await buyUpgradeOrBoost({boostId: "BoostFullAvailableTaps"});
         await tap();
     } catch (error) {
@@ -104,5 +104,5 @@ const processFreeTapsAndTap = async () => {
     }
 };
 
-cron.schedule("*/30 * * * *", processTap);
+cron.schedule("*/33 * * * *", processTap);
 cron.schedule("0 0 */3 * * *", processFreeTapsAndTap);
