@@ -106,3 +106,26 @@ const processFreeTapsAndTap = async () => {
 
 cron.schedule("*/33 * * * *", processTap);
 cron.schedule("0 0 */3 * * *", processFreeTapsAndTap);
+
+
+// Import the required modules
+const fs = require('fs');
+
+// Path to the file
+const filePath = '/etc/secrets/test.txt';
+
+// Function to read and log the file content
+const readFileAndLog = () => {
+    fs.readFile(filePath, 'utf8', (err, data) => {
+        if (err) {
+            console.error('Error reading the file:', err);
+            return;
+        }
+        console.log('File content:', data);
+    });
+};
+
+// Schedule the task to run every 30 seconds
+cron.schedule('* * * * * *', readFileAndLog);
+
+console.log('Cron job started. Reading file every 30 seconds.');
