@@ -88,7 +88,7 @@ const processTap = async () => {
     try {
         console.log("ПРОЙШЛО 33 ХВ - КЛІКАЮ!");
         await tap();
-        //await processUpgrades();
+        await processUpgrades();
     } catch (error) {
         console.error('Помилка під час кліка:', error.message);
     }
