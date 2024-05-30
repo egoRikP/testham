@@ -68,7 +68,7 @@ const processUpgrades = async () => {
         bestOffers.forEach((offer, index) =>
             console.log(`${index + 1}. ID: ${offer.id}, Назва: ${offer.name}, Ціна: ${offer.price}, Профіт: ${offer.profitPerHourDelta}, Відношення профіту до ціни: ${(offer.profitPerHourDelta / offer.price).toFixed(5)}`)
         );
-        //await buyUpgrades(bestOffers);
+        await buyUpgrades(bestOffers);
     } catch (error) {
         console.error('Помилка обробки апгрейдів:', error.message);
     }
