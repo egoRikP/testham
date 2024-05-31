@@ -104,5 +104,20 @@ const processFreeTapsAndTap = async () => {
     }
 };
 
+const dailyMoney = async () => {
+    try {
+        const response = await axios.post("https://api.hamsterkombat.io/clicker/check-task", {
+            "taskId":"streak_days"
+        }, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+    } catch (error) {
+        throw new Error(`Помилка в надсиланні запиту на ${endpoint}: ${error.response ? `HTTP ${error.response.status}: ${JSON.stringify(error.response.data)}` : error.message}`);
+    }
+};
+
 cron.schedule("*/33 * * * *", processTap);
 cron.schedule("0 0 */3 * * *", processFreeTapsAndTap);
+cron.schedule("58 18 * * *", dailyMoney);
